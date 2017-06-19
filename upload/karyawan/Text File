@@ -1,0 +1,57 @@
+private void updatekaryawan(){
+        final ProgressDialog progressDialog;
+        progressDialog = new ProgressDialog(Edit_karyawan.this);
+        progressDialog.setMessage("loading...");
+        progressDialog.show();
+
+
+        RequestBody reqNamaKaryawan = MultipartBody.create(MediaType.parse("multipart/form-data"), "amien3");
+        RequestBody reqTempatLahir = MultipartBody.create(MediaType.parse("multipart/form-data"), "1996-05-12");
+        RequestBody reqTglLahir = MultipartBody.create(MediaType.parse("multipart/form-data"), "1996-05-12");
+        RequestBody reqAlamat = MultipartBody.create(MediaType.parse("multipart/form-data"), "Jember");
+        RequestBody reqJk = MultipartBody.create(MediaType.parse("multipart/form-data"), "pria");
+        RequestBody reqUsername = MultipartBody.create(MediaType.parse("multipart/form-data"), "username");
+        RequestBody reqPassword = MultipartBody.create(MediaType.parse("multipart/form-data"), "password");
+        RequestBody reqaction = MultipartBody.create(MediaType.parse("multipart/form-data"), "PUT");
+        RequestBody reqIdKaryawan = MultipartBody.create(MediaType.parse("multipart/form-data"), "1");
+        ApiInterface mApiInterface = ApiClient.GetKaryawan2().create(ApiInterface.class);
+        Call<GetKaryawan> karyawanCall = mApiInterface.postKaryawan_update(reqIdKaryawan,
+                reqNamaKaryawan,
+                reqTempatLahir,
+                reqTglLahir,
+                reqAlamat,
+                reqJk,
+                reqUsername,
+                reqPassword,
+                null,
+                reqaction);
+
+        karyawanCall.enqueue(new Callback<GetKaryawan>() {
+            @Override
+            public void onResponse(Call<GetKaryawan> call, Response<GetKaryawan> response) {
+
+                progressDialog.dismiss();
+
+                // Response Success or Fail
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus()=="success") {
+
+                        Toast.makeText(Edit_karyawan.this, "Success", Toast.LENGTH_LONG).show();
+
+                        Intent i = new Intent(getApplicationContext(), Menu_utama.class);
+                        startActivity(i);
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(),response.body().toString(),Toast.LENGTH_LONG).show();
+                }
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<GetKaryawan> call, Throwable t) {
+                progressDialog.dismiss();
+            }
+        });
+    } 

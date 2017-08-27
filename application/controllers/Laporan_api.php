@@ -15,15 +15,15 @@ class Laporan_api extends REST_Controller {
 
         if ($id == '') {
             
-            $this->db->join('jadwal', 'jadwal.id_jadwal = laporan.id_jadwal_laporan', 'left');
-            $this->db->join('karyawan', 'karyawan.id_karyawan = jadwal.id_karyawan', 'left');
-            $this->db->join('lokasi', 'lokasi.id_lokasi = jadwal.id_lokasi', 'left');
+            $this->db->join('karyawan', 'karyawan.id_karyawan = laporan.id_karyawan', 'left');
+            $this->db->join('lokasi', 'lokasi.id_lokasi = laporan.id_lokasi', 'left');
+            // $this->db->join('lokasi', 'lokasi.id_lokasi = jadwal.id_lokasi', 'left');
             $laporan=$this->db->get("laporan")->result();
 
         } else {
-            $this->db->join('jadwal', 'jadwal.id_jadwal = laporan.id_jadwal_laporan', 'left');
-            $this->db->join('karyawan', 'karyawan.id_karyawan = jadwal.id_karyawan', 'left');
-            $this->db->join('lokasi', 'lokasi.id_lokasi = jadwal.id_lokasi', 'left');
+            $this->db->join('karyawan', 'karyawan.id_karyawan = laporan.id_karyawan', 'left');
+            $this->db->join('lokasi', 'lokasi.id_lokasi = laporan.id_lokasi', 'left');
+            // $this->db->join('lokasi', 'lokasi.id_lokasi = jadwal.id_lokasi', 'left');
             $this->db->where('karyawan.id_karyawan', $id);
             $laporan=$this->db->get("laporan")->result();
             
@@ -42,10 +42,12 @@ class Laporan_api extends REST_Controller {
                 
         $data = array(
             'id_laporan' => "",
-            'id_jadwal_laporan' => $this->post('id_jadwal_laporan'),
             'foto_laporan' => date('d-m-Y-s-h-i').".png",
             'deskripsi' => $this->post('deskripsi'),
-            'status' => $this->post('status')
+            'status' => $this->post('status'),  
+            'tanggal' => date('Y-m-d'),
+            'id_karyawan' => $this->post('id_karyawan'), 
+            'id_lokasi' => $this->post('id_lokasi')
             );
             if(!empty($_FILES)){
                 $path = $_FILES['foto_laporan']['tmp_name'];
@@ -61,14 +63,16 @@ class Laporan_api extends REST_Controller {
             $this->response(array("laporan"=>array($row1),'status' => 'failed', 502));
         }
         }elseif($this->post('action')=="PUT"){
-            $id_jadwal_laporan = $this->post('id_laporan');
+            $id_laporan = $this->post('id_laporan');
         $data = array(
             'id_laporan' => $this->post('id_laporan'),
-            'id_jadwal_laporan' => $this->post('id_jadwal_laporan'),
             'foto_laporan' => date('d-m-Y-s-h-i').".png",
             'deskripsi' => $this->post('deskripsi'),
-            'status' => $this->post('status'));
-        $this->db->where('id_jadwal_laporan', $id_jadwal_laporan);
+            'status' => $this->post('status'),  
+            'tanggal' => date('Y-m-d'),
+            'id_karyawan' => $this->post('id_karyawan'), 
+            'id_lokasi' => $this->post('id_lokasi'));
+        $this->db->where('id_laporan', $id_laporan);
         if(!empty($_FILES)){
                 $path = $_FILES['foto_laporan']['tmp_name'];
                 move_uploaded_file($path,"upload/laporan/".$data['foto_laporan']);
@@ -85,33 +89,12 @@ class Laporan_api extends REST_Controller {
        
     }
 
-    // update data 
-    function index_put() {
-        $id_jadwal_laporan = $this->post('id_jadwal_laporan');
-        $data = array(
-            'id_jadwal_laporan' => $this->post('id_jadwal_laporan'),
-            'id_jadwal' => $this->post('id_jadwal'),
-            'foto_laporan' => date('d-m-Y').".png",
-            'deskripsi' => $this->post('deskripsi'),
-            'status' => $this->post('status'));
-        $this->db->where('id_jadwal_laporan', $id_jadwal_laporan);
-        if(!empty($_FILES)){
-                $path = $_FILES['foto_laporan']['tmp_name'];
-                move_uploaded_file($path,"upload/".$data['foto_laporan']);
-                
-            }
-        $update = $this->db->update('Laporan', $data);
-        if ($update) {
-            $this->response(array("laporan"=>array($data), "status"=>"success", 200));
-        } else {
-            $this->response(array("laporan"=>array($data),'status' => 'failed', 502));
-        }
-    }
+
 
     // delete 
     function index_delete() {
-        $id_jadwal_laporan = $this->delete('id_jadwal_laporan');
-        $this->db->where('id_jadwal_laporan', $id_jadwal_laporan);
+        $id_laporan = $this->delete('id_laporan');
+        $this->db->where('id_laporan', $id_laporan);
         $delete = $this->db->delete('Laporan');
         if ($delete) {
             $this->response(array('status' => 'success'), 200);

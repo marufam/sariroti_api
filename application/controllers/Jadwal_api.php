@@ -18,8 +18,7 @@ class Jadwal_api extends REST_Controller {
         if ($id_karyawan == '') {
             $this->db->join('karyawan', 'karyawan.id_karyawan = jadwal.id_karyawan', 'left');
             $this->db->join('lokasi', 'lokasi.id_lokasi = jadwal.id_lokasi', 'left');
-            $this->db->join('laporan', 'laporan.id_jadwal_laporan = jadwal.id_jadwal', 'left');
-             $this->db->where('jadwal.tanggal', date("Y-m-d"));
+            $this->db->join('hari', 'hari.id_hari = jadwal.id_hari', 'left');
             $jadwal=$this->db->get("jadwal");
             $count=$jadwal->num_rows();
             $jadwal=$jadwal->result();
@@ -27,9 +26,7 @@ class Jadwal_api extends REST_Controller {
            
             $this->db->join('karyawan', 'karyawan.id_karyawan = jadwal.id_karyawan', 'left');
             $this->db->join('lokasi', 'lokasi.id_lokasi = jadwal.id_lokasi', 'left');
-            $this->db->join('laporan', 'laporan.id_jadwal_laporan = jadwal.id_jadwal', 'left');
-            // $this->db->where('id_jadwal', $id);
-            $this->db->where('jadwal.tanggal', date("Y-m-d"));
+            $this->db->join('hari', 'hari.id_hari = jadwal.id_hari', 'left');
             $this->db->where('jadwal.id_karyawan', $id_karyawan);
             $jadwal=$this->db->get("jadwal");
             $count=$jadwal->num_rows();
@@ -46,8 +43,8 @@ class Jadwal_api extends REST_Controller {
     // insert new data to 
     function index_post() {
         $data = array(
-            'id_jadwal_laporan' => "",
-            'tanggal' => $this->input->post('tanggal'),
+            'id_jadwal' => "",
+            'id_hari' => $this->input->post('id_hari'),
             'id_karyawan' => $this->input->post('id_karyawan'),
             'id_lokasi' => $this->input->post('id_lokasi')
             );
@@ -59,27 +56,10 @@ class Jadwal_api extends REST_Controller {
         }
     }
 
-    // update data 
-    function index_put() {
-        $id_jadwal_laporan = $this->put('id_jadwal_laporan');
-        $data = array(
-            'id_jadwal_laporan' => $this->put('id_jadwal_laporan'),
-            'tanggal' => $this->put('tanggal'),
-            'id_karyawan' => $this->put('id_karyawan'),
-            'id_lokasi' => $this->put('id_lokasi'));
-        $this->db->where('id_jadwal_laporan', $id_jadwal_laporan);
-        $update = $this->db->update('jadwal', $data);
-        if ($update) {
-            $this->response(array("jadwal"=>array($data), "status"=>"success", 200));
-        } else {
-            $this->response(array("jadwal"=>array($data), "status"=>"failed", 502));
-        }
-    }
-
     // delete 
     function index_delete() {
-        $id_jadwal_laporan = $this->delete('id_jadwal_laporan');
-        $this->db->where('id_jadwal_laporan', $id_jadwal_laporan);
+        $id_jadwal = $this->delete('id_jadwal');
+        $this->db->where('id_jadwal', $id_jadwal);
         $delete = $this->db->delete('jadwal');
         if ($delete) {
             $this->response(array('status' => 'success'), 200);
